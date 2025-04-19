@@ -15,10 +15,14 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+
+        $roles = ['admin'];
+
         if ($request->user() && !in_array($request->user()->role, $roles)) {
-            return redirect('/home')->with('error', 'You do not have access to this page.');
+            return redirect('/dashboard')->with('error', 'You do not have access to this page.');
         }
 
         return $next($request);
     }
+    
 }
