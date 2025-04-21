@@ -32,7 +32,7 @@
                     <span
                         class="inline-block px-3 py-1 text-sm font-semibold rounded-full 
                         {{ $transaction->customer->id != 0 ? 'bg-green-500 text-white' : 'bg-red-500 text-white' }}">
-                        {{ $transaction->customer->id != 0 ? 'Member' : 'Non-Member' }}
+                        {{ $transaction->customer->id != null ? 'Member' : 'Non-Member' }}
                     </span>
                 </div>
 

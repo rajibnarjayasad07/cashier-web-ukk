@@ -66,7 +66,7 @@
                                     <td class="px-6 py-4 text-center">
                                         <div class="flex justify-center space-x-2">
                                             <a href="{{ route('product.edit', $product->id) }}"
-                                                class="text-blue-500 hover:underline">Edit</a>
+                                                class="text-blue-500 hover:underline">Edit Product</a>
                                             <button
                                                 onclick="openStockModal({{ $product->id }}, '{{ $product->name }}', {{ $product->stock }})"
                                                 class="text-yellow-500 hover:underline">Edit Stock</button>

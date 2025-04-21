@@ -52,9 +52,9 @@
                                 <td class="px-6 py-4">{{ $user->role }}</td>
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex justify-center space-x-2">
+                                        @if ($user->role == 'cashier')
                                         <a href="{{ route('users.edit', $user->id) }}"
                                             class="text-blue-500 hover:underline">Edit</a>
-                                        @if ($user->role == 'cashier')
                                             <button onclick="confirmDelete({{ $user->id }})"
                                                 class="text-red-500 hover:underline">Delete</button>
                                         @endif

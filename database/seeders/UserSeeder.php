@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'rajib',
             'email' => 'rajibnarjayasad07@gmail.com',
-            'password' => Hash::make('12345678'),
+            'password' => '12345678',
         ]);
 
         // Create cashier user

@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/product', [ProductController::class, 'index'])->name('product');
+    // Route::get('/product/search', [ProductController::class, 'search'])->name('product.search');
 
     Route::prefix('transaction')->name('transaction.')->group(function () {
         Route::get('/', [TransactionController::class, 'index'])->name('index');
@@ -34,6 +35,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/update-member', [TransactionController::class, 'updateMember'])->name('update-member');
         Route::delete('/{id}/cancel', [TransactionController::class, 'cancel'])->name('cancel');
     });
+
+    Route::get('/export/transaction/{id}/invoice-pdf', [ExportController::class, 'downloadInvoicePdf'])->name('export.transaction.invoice-pdf');
+    Route::get('/export/transactions/excel', [ExportController::class, 'exportTransactionsExcel'])->name('export.transactions.excel');
 });
 
 Route::middleware(['role:admin'])->group(function () {
@@ -54,9 +58,7 @@ Route::middleware(['role:admin'])->group(function () {
         Route::delete('/{id}/delete', [UserController::class, 'destroy'])->name('users.destroy');
     });
 
-    Route::get('/export/transactions/excel', [ExportController::class, 'exportTransactionsExcel'])->name('export.transactions.excel');
     Route::get('/export/products/excel', [ExportController::class, 'exportProductsExcel'])->name('export.products.excel');
-    Route::get('/export/transaction/{id}/invoice-pdf', [ExportController::class, 'downloadInvoicePdf'])->name('export.transaction.invoice-pdf');
 });
 
 

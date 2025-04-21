@@ -32,6 +32,8 @@
     <p><strong>Transaction Date:</strong> {{ $transaction->transaction_date }}</p>
     <p><strong>Cashier:</strong> {{ $transaction->user->name }}</p>
     <p><strong>Customer:</strong> {{ $transaction->customer->name ?? 'Non-Member' }}</p>
+    <p><strong>Used Poin:</strong>{{ $transaction->total_point }}</p>
+    <p><strong>Poin Earned:</strong>{{ $transaction->loyalty_points }}</p>
     <p><strong>Phone:</strong> {{ $transaction->customer->phone ?? '-' }}</p>
 
     <h2>Purchased Products</h2>

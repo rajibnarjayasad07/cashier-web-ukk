@@ -12,13 +12,13 @@ class Customer extends Model
     use HasFactory;
     protected $fillable = [
         'name',
-        'email',
+        // 'email',
         'phone',
-        'address',
-        'city',
-        'state',
+        // 'address',
+        // 'city',
+        // 'state',
         'loyalty_points',
-        'zip_code',
+        // 'zip_code',
     ];
 
     public function transactions()
