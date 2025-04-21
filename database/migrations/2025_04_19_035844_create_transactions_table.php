@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->date('transaction_date');
-            $table->decimal('total_price', 10, 2);
-            $table->decimal('total_payment',10, 2);
-            $table->decimal('total_return', 10, 2);
+            $table->integer('total_price');
+            $table->integer('total_payment');
+            $table->integer('total_return');
             $table->foreignId('customers_id')->constrained()->onDelete('cascade');
             $table->foreignId('users_id')->constrained()->onDelete('cascade');
             $table->integer('loyalty_points');

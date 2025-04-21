@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Transaction;
+
 
 class Customer extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'name',
         'email',
@@ -13,15 +17,12 @@ class Customer extends Model
         'address',
         'city',
         'state',
+        'loyalty_points',
         'zip_code',
     ];
 
-    // public function orders()
-    // {
-    //     return $this->hasMany(Order::class);
-    // }
-    // public function payments()
-    // {
-    //     return $this->hasMany(Payment::class);
-    // }
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

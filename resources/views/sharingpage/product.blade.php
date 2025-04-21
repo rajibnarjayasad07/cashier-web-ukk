@@ -1,173 +1,135 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }}
+            {{ __('Products') }}
         </h2>
     </x-slot>
-    <div class="py-12 flex flex-col justify-center">
-        <div class="flex w-full justify-end pr-10">
-            <div class="inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                <a href="{{ route('product.add') }}">Add Product</a>
+    <div class="py-12">
+        <!-- Flash Messages -->
+        @if (session('success'))
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-4">
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+                    role="alert">
+                    <strong class="font-bold">Success!</strong>
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-4">
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <strong class="font-bold">Error!</strong>
+                    <span class="block sm:inline">{{ session('error') }}</span>
+                </div>
+            </div>
+        @endif
+
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="flex justify-end mb-4 space-x-4">
+                @if (auth()->user()->role == 'admin')
+                    <a href="{{ route('product.create') }}"
+                        class="px-4 py-2 bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-800 rounded-md hover:bg-gray-700 dark:hover:bg-gray-300">
+                        Add Product
+                    </a>
+                    <a href="{{ route('export.products.excel') }}"
+                        class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+                        Export Excel
+                    </a>
+                @endif
+            </div>
+            <div class="overflow-x-auto bg-gray-800 rounded-lg shadow-lg">
+                <table class="min-w-full text-sm text-left text-gray-400">
+                    <thead class="bg-gray-700 text-xs uppercase text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">#</th>
+                            <th scope="col" class="px-6 py-3">Image</th>
+                            <th scope="col" class="px-6 py-3">Name</th>
+                            <th scope="col" class="px-6 py-3">Price</th>
+                            <th scope="col" class="px-6 py-3">Stock</th>
+                            @if (auth()->user()->role == 'admin')
+                                <th scope="col" class="px-6 py-3 text-center">Actions</th>
+                            @endif
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($products as $index => $product)
+                            <tr class="border-b border-gray-700">
+                                <td class="px-6 py-4">{{ $index + 1 }}</td>
+                                <td class="px-6 py-4">
+                                    <img src="{{ asset('storage/products/' . $product->image) }}"
+                                        alt="{{ $product->name }}" class="w-16 h-16 object-cover rounded">
+                                </td>
+                                <td class="px-6 py-4">{{ $product->name }}</td>
+                                <td class="px-6 py-4">Rp. {{ number_format($product->price, 0, ',', '.') }}</td>
+                                <td class="px-6 py-4">{{ $product->stock }}</td>
+                                @if (auth()->user()->role == 'admin')
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex justify-center space-x-2">
+                                            <a href="{{ route('product.edit', $product->id) }}"
+                                                class="text-blue-500 hover:underline">Edit</a>
+                                            <button
+                                                onclick="openStockModal({{ $product->id }}, '{{ $product->name }}', {{ $product->stock }})"
+                                                class="text-yellow-500 hover:underline">Edit Stock</button>
+                                            <form action="{{ route('product.destroy', $product->id) }}" method="POST"
+                                                class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="text-red-500 hover:underline">Delete</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                @endif
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                    No products found.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
-        <div id="" class="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5">
-        
-                <!--   ✅ Product card 1 - Starts Here 👇 -->
-                <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-                    <a href="#">
-                        <img src="https://images.unsplash.com/photo-1646753522408-077ef9839300?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwcm9maWxlLXBhZ2V8NjZ8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                                alt="Product" class="h-80 w-72 object-cover rounded-t-xl" />
-                        <div class="px-4 py-3 w-72">
-                            <span class="text-gray-400 mr-3 uppercase text-xs">Stock : 99</span>
-                            <p class="text-lg font-bold text-black truncate block capitalize">Product Name</p>
-                            <div class="flex items-center">
-                                <p class="text-lg font-semibold text-black cursor-auto my-3">Rp. 100.000</p>
-                                {{-- <del>
-                                    <p class="text-sm text-gray-600 cursor-auto ml-2">$199</p>
-                                </del> --}}
-                                <div class="ml-auto"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                        fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd"
-                                            d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
-                                        <path
-                                            d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
-                                    </svg></div>
-                            </div>
-                        </div>
-                    </a>
+    </div>
+
+    <!-- Edit Stock Modal -->
+    <div id="stockModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-gray-800 text-gray-300 rounded-lg shadow-lg p-6 w-96">
+            <h2 class="text-lg font-semibold mb-4">Edit Stock</h2>
+            <form id="stockForm" method="POST" action="">
+                @csrf
+                @method('PUT')
+                <div class="mb-4">
+                    <label for="productName" class="block text-sm font-medium">Product Name</label>
+                    <input type="text" id="productName"
+                        class="block mt-1 w-full bg-gray-700 text-gray-300 rounded-md" readonly>
                 </div>
-                <!--   🛑 Product card 1 - Ends Here  -->
-        
-                <!--   ✅ Product card 2 - Starts Here 👇 -->
-                <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-                    <a href="#">
-                        <img src="https://images.unsplash.com/photo-1651950519238-15835722f8bb?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwcm9maWxlLXBhZ2V8Mjh8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                                alt="Product" class="h-80 w-72 object-cover rounded-t-xl" />
-                        <div class="px-4 py-3 w-72">
-                            <span class="text-gray-400 mr-3 uppercase text-xs">Stock : 99</span>
-                            <p class="text-lg font-bold text-black truncate block capitalize">Product Name</p>
-                            <div class="flex items-center">
-                                <p class="text-lg font-semibold text-black cursor-auto my-3">Rp. 100.000</p>
-                                {{-- <del>
-                                    <p class="text-sm text-gray-600 cursor-auto ml-2">$199</p>
-                                </del> --}}
-                                <div class="ml-auto"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                        fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd"
-                                            d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
-                                        <path
-                                            d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
-                                    </svg></div>
-                            </div>
-                        </div>
-                    </a>
+                <div class="mb-4">
+                    <label for="productStock" class="block text-sm font-medium">Stock</label>
+                    <input type="number" id="productStock" name="stock"
+                        class="block mt-1 w-full bg-gray-700 text-gray-300 rounded-md" required>
                 </div>
-                <!--   🛑 Product card 2- Ends Here  -->
-        
-                <!--   ✅ Product card 3 - Starts Here 👇 -->
-                <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-                    <a href="#">
-                        <img src="https://images.unsplash.com/photo-1651950537598-373e4358d320?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwcm9maWxlLXBhZ2V8MjV8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                                alt="Product" class="h-80 w-72 object-cover rounded-t-xl" />
-                        <div class="px-4 py-3 w-72">
-                            <span class="text-gray-400 mr-3 uppercase text-xs">Stock</span>
-                            <p class="text-lg font-bold text-black truncate block capitalize">Product Name</p>
-                            <div class="flex items-center">
-                                <p class="text-lg font-semibold text-black cursor-auto my-3">Rp. 100.000</p>
-                                {{-- <del>
-                                    <p class="text-sm text-gray-600 cursor-auto ml-2">$199</p>
-                                </del> --}}
-                                <div class="ml-auto"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                        fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd"
-                                            d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
-                                        <path
-                                            d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
-                                    </svg></div>
-                            </div>
-                        </div>
-                    </a>
+                <div class="flex justify-end">
+                    <button type="button" onclick="closeStockModal()"
+                        class="px-4 py-2 bg-gray-600 text-white rounded-md mr-2">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md">Update</button>
                 </div>
-                <!--   🛑 Product card 3 - Ends Here  -->
-        
-                <!--   ✅ Product card 4 - Starts Here 👇 -->
-                <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-                    <a href="#">
-                        <img src="https://images.unsplash.com/photo-1651950540805-b7c71869e689?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwcm9maWxlLXBhZ2V8Mjl8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                                alt="Product" class="h-80 w-72 object-cover rounded-t-xl" />
-                        <div class="px-4 py-3 w-72">
-                            <span class="text-gray-400 mr-3 uppercase text-xs">Stock</span>
-                            <p class="text-lg font-bold text-black truncate block capitalize">Product Name</p>
-                            <div class="flex items-center">
-                                <p class="text-lg font-semibold text-black cursor-auto my-3">Rp. 100.000</p>
-                                {{-- <del>
-                                    <p class="text-sm text-gray-600 cursor-auto ml-2">$199</p>
-                                </del> --}}
-                                <div class="ml-auto"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                        fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd"
-                                            d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
-                                        <path
-                                            d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
-                                    </svg></div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <!--   🛑 Product card 4 - Ends Here  -->
-        
-                <!--   ✅ Product card 5 - Starts Here 👇 -->
-                <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-                    <a href="#">
-                        <img src="https://images.unsplash.com/photo-1649261191624-ca9f79ca3fc6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwcm9maWxlLXBhZ2V8NDd8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                                alt="Product" class="h-80 w-72 object-cover rounded-t-xl" />
-                        <div class="px-4 py-3 w-72">
-                            <span class="text-gray-400 mr-3 uppercase text-xs">Stock : 99</span>
-                            <p class="text-lg font-bold text-black truncate block capitalize">Product Name</p>
-                            <div class="flex items-center">
-                                <p class="text-lg font-semibold text-black cursor-auto my-3">Rp. 100.000</p>
-                                {{-- <del>
-                                    <p class="text-sm text-gray-600 cursor-auto ml-2">$199</p>
-                                </del> --}}
-                                <div class="ml-auto"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                        fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd"
-                                            d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
-                                        <path
-                                            d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
-                                    </svg></div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <!--   🛑 Product card 5 - Ends Here  -->
-        
-                <!--   ✅ Product card 6 - Starts Here 👇 -->
-                <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-                    <a href="#">
-                        <img src="https://images.unsplash.com/photo-1649261191606-cb2496e97eee?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwcm9maWxlLXBhZ2V8NDR8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                                alt="Product" class="h-80 w-72 object-cover rounded-t-xl" />
-                        <div class="px-4 py-3 w-72">
-                            <span class="text-gray-400 mr-3 uppercase text-xs">Stock : 99</span>
-                            <p class="text-lg font-bold text-black truncate block capitalize">Product Name</p>
-                            <div class="flex items-center">
-                                <p class="text-lg font-semibold text-black cursor-auto my-3">Rp. 100.000</p>
-                                {{-- <del>
-                                    <p class="text-sm text-gray-600 cursor-auto ml-2">$199</p>
-                                </del> --}}
-                                <div class="ml-auto"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                        fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd"
-                                            d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
-                                        <path
-                                            d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
-                                    </svg></div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <!--   🛑 Product card 6 - Ends Here  -->
-        
+            </form>
         </div>
     </div>
+
+    <script>
+        function openStockModal(id, name, stock) {
+            document.getElementById('stockModal').classList.remove('hidden');
+            document.getElementById('stockForm').action = `/product/${id}/update-stock`;
+            document.getElementById('productName').value = name;
+            document.getElementById('productStock').value = stock;
+        }
+
+        function closeStockModal() {
+            document.getElementById('stockModal').classList.add('hidden');
+        }
+    </script>
 </x-app-layout>

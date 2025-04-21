@@ -1,140 +1,107 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('User') }}
+            {{ __('Users') }}
         </h2>
     </x-slot>
 
     <div class="py-12">
-        <div class="w-full flex items-center justify-center min-h-full p-2">
-                <div class="container max-w-6xl">
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                      <!-- Table Header -->
-                      <div class="p-6 border-b border-gray-200">
-                        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                          <div>
-                            <h2 class="text-xl font-bold text-gray-800">Add Employee</h2>
-                            <p class="text-gray-500 mt-1">Manage employee and user permision in here.</p>
-                          </div>
-                          <div class="mt-4 md:mt-0">
-                            <div class="inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                                <a href="{{ route('users.add') }}">Add User</a>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <!-- Search and Filter -->
-                        <div class="mt-6 flex flex-col sm:flex-row gap-4">
-                          <div class="relative flex-grow">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                              <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                              </svg>
-                            </div>
-                            <input type="text" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full " placeholder="Search members...">
-                          </div>
-                          <div>
-                            <select class="border border-gray-300 rounded-lg px-4 py-2  w-full sm:w-auto">
-                                <option selected disabled value="Role"></option>
-                                <option value="engineering">Admin</option>
-                                <option value="design">Cashier</option>
-                              </select>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <!-- Table -->
-                      <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                          <thead class="bg-gray-50">
+        <!-- Flash Messages -->
+        @if (session('success'))
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-4">
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+                    role="alert">
+                    <strong class="font-bold">Success!</strong>
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-4">
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <strong class="font-bold">Error!</strong>
+                    <span class="block sm:inline">{{ session('error') }}</span>
+                </div>
+            </div>
+        @endif
+
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="flex justify-end mb-4">
+                <a href="{{ route('users.create') }}"
+                    class="px-4 py-2 bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-800 rounded-md hover:bg-gray-700 dark:hover:bg-gray-300">
+                    Add User
+                </a>
+            </div>
+            <div class="overflow-x-auto bg-gray-800 rounded-lg shadow-lg">
+                <table class="min-w-full text-sm text-left text-gray-400">
+                    <thead class="bg-gray-700 text-xs uppercase text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">#</th>
+                            <th scope="col" class="px-6 py-3">Name</th>
+                            <th scope="col" class="px-6 py-3">Email</th>
+                            <th scope="col" class="px-6 py-3">Role</th>
+                            <th scope="col" class="px-6 py-3 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($users as $index => $user)
+                            <tr class="border-b border-gray-700">
+                                <td class="px-6 py-4">{{ $index + 1 }}</td>
+                                <td class="px-6 py-4">{{ $user->name }}</td>
+                                <td class="px-6 py-4">{{ $user->email }}</td>
+                                <td class="px-6 py-4">{{ $user->role }}</td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex justify-center space-x-2">
+                                        <a href="{{ route('users.edit', $user->id) }}"
+                                            class="text-blue-500 hover:underline">Edit</a>
+                                        @if ($user->role == 'cashier')
+                                            <button onclick="confirmDelete({{ $user->id }})"
+                                                class="text-red-500 hover:underline">Delete</button>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
                             <tr>
-                              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Name
-                              </th>
-                              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Email
-                              </th>
-                              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Role
-                              </th>
-                              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Actions
-                              </th>
+                                <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                    No users found.
+                                </td>
                             </tr>
-                          </thead>
-                          <tbody class="bg-white divide-y divide-gray-200">
-                            <!-- Row 1 -->
-                            @foreach ($users as $user)
-                            <tr class="hover:bg-gray-50 transition-colors duration-150">
-                              <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                  <div class="">
-                                    <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
-                                  </div>
-                                </div>
-                              </td>
-                              <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">{{ $user->email }}</div>
-                              </td>
-                              <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">{{ $user->role }}</div>
-                              </td>
-                              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
-                                <a href="#" class="text-red-600 hover:text-red-900">Delete</a>
-                              </td>
-                            </tr>
-                            @endforeach
-                          </tbody>
-                        </table>
-                      </div>
-                      
-                      <!-- Pagination -->
-                      <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-                        <div class="flex items-center justify-between flex-col sm:flex-row">
-                          <div class="mb-4 sm:mb-0">
-                            <p class="text-sm text-gray-700">
-                              Showing <span class="font-medium">1</span> to <span class="font-medium">5</span> of <span class="font-medium">24</span> results
-                            </p>
-                          </div>
-                          <div>
-                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                              <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                <span class="sr-only">Previous</span>
-                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                  <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                </svg>
-                              </a>
-                              <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-indigo-50 text-sm font-medium text-indigo-600 hover:bg-indigo-100">
-                                1
-                              </a>
-                              <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                                2
-                              </a>
-                              <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                                3
-                              </a>
-                              <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-                                ...
-                              </span>
-                              <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                                8
-                              </a>
-                              <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                                9
-                              </a>
-                              <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                <span class="sr-only">Next</span>
-                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                                </svg>
-                              </a>
-                            </nav>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  </div>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-gray-800 text-gray-300 rounded-lg shadow-lg p-6 w-96">
+            <h2 class="text-lg font-semibold mb-4">Confirm Delete</h2>
+            <p>Are you sure you want to delete this user?</p>
+            <div class="flex justify-end mt-4">
+                <button type="button" onclick="closeDeleteModal()"
+                    class="px-4 py-2 bg-gray-600 text-white rounded-md mr-2">Cancel</button>
+                <form id="deleteForm" method="POST" action="">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-md">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function confirmDelete(id) {
+            const modal = document.getElementById('deleteModal');
+            const form = document.getElementById('deleteForm');
+            form.action = `/users/${id}/delete`; // Update route to match the delete route
+            modal.classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('deleteModal');
+            modal.classList.add('hidden');
+        }
+    </script>
 </x-app-layout>
