@@ -26,7 +26,7 @@
         "APP_SERVICE_CACHE": "/tmp/services.php",
         "VIEW_COMPILED_PATH": "/tmp",
 
-        "CHACHE_DRIVER": "array",
+        "CACHE_DRIVER": "array",
         "LOG_CHANNEL": "stderr",
         "SESSION_DRIVER": "cookie"
     }
