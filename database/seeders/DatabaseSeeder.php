@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
             'password' => 'admin12345',
         ]);
+        
 
         User::factory()->create([
             'name' => 'cashier',
